@@ -54,7 +54,13 @@ public class GetAllNumbers implements FunctionProvider
 			get.associateInput(0, split, 0);
 			get.associateOutput(0, tonum, 0);
 		}
-		return new ApplyToAll(get);
+		GroupFunction all = new GroupFunction(1, 1);
+		CircuitFunction cf = new CircuitFunction(new ApplyToAll(get));
+		all.add(cf);
+		all.associateInput(0, cf, 0);
+		all.associateOutput(0, cf, 0);
+		return all;
+		
 	}
 
 	@Override

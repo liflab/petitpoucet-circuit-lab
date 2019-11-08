@@ -45,14 +45,61 @@ public class CircuitExperiment extends Experiment
 	 */
 	public static final transient String SIZE = "Queryable size";
 	
+	/**
+	 * The parameter "evaluation time"
+	 */
+	public static final transient String EVAL_TIME = "Evaluation time";
+	
+	/**
+	 * The parameter "total memory"
+	 */
+	public static final transient String TOTAL_MEM = "Total memory";
+	
+	/**
+	 * The parameter "tracking enabled"
+	 */
+	public static final transient String TRACKING_ENABLED = "Tracking enabled";
+	
+	/**
+	 * The value "yes" for the parameter "tracking enabled"
+	 */
+	public static final transient String TRACKING_YES = "Yes";
+	
+	/**
+	 * The value "no" for the parameter "tracking enabled"
+	 */
+	public static final transient String TRACKING_NO = "No";
+	
 	public CircuitExperiment(FunctionProvider fp, InputProvider ip)
 	{
 		super();
 		describe(SIZE, "The size (in bytes) of the queryable resulting from the evaluation of the circuit");
+		describe(TOTAL_MEM, "The total memory consumption (in bytes) resulting from the evaluation of the circuit");
+		describe(EVAL_TIME, "The time (in ms) required to evaluate the circuit on the input");
+		describe(TRACKING_ENABLED, "Whether lineage tracking is enabled for the evaluation of the circuit");
+		setInput(TRACKING_ENABLED, TRACKING_YES);
 		m_function = fp;
 		m_function.writeInto(this);
 		m_input = ip;
 		m_input.writeInto(this);
+	}
+	
+	/**
+	 * Sets whether lineage tracking is enabled for the evaluation of the circuit.
+	 * Note that calling this method has no effect if the experiment is already done.
+	 * @param b <tt>true</tt> to enable tracking (default), <tt>false</tt> to
+	 * disable it
+	 */
+	public void enableTracking(boolean b)
+	{
+		if (b)
+		{
+			setInput(TRACKING_ENABLED, TRACKING_YES);
+		}
+		else
+		{
+			setInput(TRACKING_ENABLED, TRACKING_NO);
+		}
 	}
 	
 	@Override
@@ -61,21 +108,32 @@ public class CircuitExperiment extends Experiment
 		Function f = m_function.getFunction();
 		Object[] inputs = m_input.getInput();
 		Object[] outputs = new Object[f.getOutputArity()];
-		Queryable q = f.evaluate(inputs, outputs);
-		SizePrinter size_p = new SizePrinter();
+		boolean track = true;
+		if (readString(TRACKING_ENABLED).compareTo(TRACKING_NO) == 0)
+		{
+			track = false;
+		}
+		long start_time = System.currentTimeMillis();
+		Queryable q = f.evaluate(inputs, outputs, track);
+		long end_time = System.currentTimeMillis();
+		write(EVAL_TIME, end_time - start_time);
+		SizePrinter size_q = new SizePrinter();
+		SizePrinter size_f = new SizePrinter();
 		MapSizePrinter msp = new MapSizePrinter();
-		int size = 0;
+		int q_size = 0, f_size = 0;
 		try
 		{
-			size = size_p.print(q).intValue();
-			SizeEntry se = msp.print(q);
-			FileHelper.writeFromString(new File("/tmp/out.txt"), se.toString());
+			q_size = size_q.print(q).intValue();
+			f_size = size_f.print(f).intValue();
+			//SizeEntry se = msp.print(q);
+			//FileHelper.writeFromString(new File("/tmp/out.txt"), se.toString());
 		}
 		catch (PrintException e) 
 		{
 			throw new ExperimentException(e);
 		}
-		write(SIZE, size);
+		write(SIZE, q_size);
+		write(TOTAL_MEM, q_size + f_size);
 	}
 
 }

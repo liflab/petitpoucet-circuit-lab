@@ -17,7 +17,10 @@
  */
 package circuitlab;
 
+import static circuitlab.CircuitExperiment.EVAL_TIME;
 import static circuitlab.CircuitExperiment.SIZE;
+import static circuitlab.CircuitExperiment.TOTAL_MEM;
+import static circuitlab.CircuitExperiment.TRACKING_ENABLED;
 import static circuitlab.FunctionProvider.FUNCTION;
 import static circuitlab.InputProvider.INPUT_NAME;
 
@@ -25,6 +28,7 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
 import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.labpal.table.VersusTable;
 import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
@@ -41,39 +45,85 @@ public class MainLab extends Laboratory
 	{
 		// The factory to create the experiments
 		CircuitExperimentFactory factory = new CircuitExperimentFactory(this);
-		
+
 		// Basic lab stats
 		add(new LabStats(this));
-		
+
 		// Nicknamers
 		LatexNamer l_namer = new LatexNamer();
-		
-		// Impact of file length
+
+		// Setup of global region
 		Region big_r = new Region();
 		big_r.add(FUNCTION, GetAllNumbers.GET_ALL_NUMBERS, AverageWindow.AVERAGE_WINDOW);
 		big_r.add(INPUT_NAME, TextLineProvider.CSV_FILE);
-		big_r.add(TextLineProvider.LINES, 1, 1000, 5000, 10000);
-		ExperimentTable et = new ExperimentTable(TextLineProvider.LINES, FUNCTION, SIZE);
-		et.setShowInList(false);
-		for (Region r : big_r.all(FUNCTION, TextLineProvider.LINES))
+		big_r.add(TextLineProvider.LINES, 1, 1000, 5000, 10000, 20000);
+		big_r.add(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO, CircuitExperiment.TRACKING_YES);
+
+		// Impact of file length
 		{
-			CircuitExperiment exp = factory.get(r);
-			et.add(exp);
+			Region sub_r = new Region(big_r);
+			sub_r = sub_r.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES);
+			ExperimentTable et = new ExperimentTable(TextLineProvider.LINES, FUNCTION, SIZE);
+			et.setShowInList(false);
+			for (Region r : sub_r.all(FUNCTION, TextLineProvider.LINES))
+			{
+				CircuitExperiment exp = factory.get(r);
+				et.add(exp);
+			}
+			TransformedTable tt = new TransformedTable(new ExpandAsColumns(FUNCTION, SIZE), et);
+			tt.setTitle("Impact of file length");
+			l_namer.setNickname(tt, sub_r, "tFileLen", "");
+			add(tt);
+			Scatterplot plot = new Scatterplot(tt);
+			plot.setTitle(tt.getTitle());
+			plot.setCaption(Axis.X, "Length").setCaption(Axis.Y, "Size (B)");
+			l_namer.setNickname(plot, sub_r, "pFileLen", "");
+			add(plot);
 		}
-		TransformedTable tt = new TransformedTable(new ExpandAsColumns(FUNCTION, SIZE), et);
-		tt.setTitle("Impact of file length");
-		l_namer.setNickname(tt, big_r, "tFileLen", "");
-		add(tt);
-		Scatterplot plot = new Scatterplot(tt);
-		plot.setTitle(tt.getTitle());
-		plot.setCaption(Axis.X, "Length").setCaption(Axis.Y, "Size (B)");
-		l_namer.setNickname(plot, big_r, "pFileLen", "");
-		add(plot);
 		
+		// Impact of enabling tracking
+		{
+			Region sub_r = new Region(big_r);
+			VersusTable et_t = new VersusTable(EVAL_TIME, "Time (without)", "Time (with)");
+			et_t.setTitle("Impact of enabling tracking on execution time");
+			l_namer.setNickname(et_t, sub_r, "tTrackingImpactTime", "");
+			add(et_t);
+			VersusTable et_m = new VersusTable(TOTAL_MEM, "Memory (without)", "Memory (with)");
+			et_m.setTitle("Impact of enabling tracking on memory");
+			l_namer.setNickname(et_m, sub_r, "tTrackingImpactMemory", "");
+			add(et_m);
+			for (Region r : sub_r.all(FUNCTION, TextLineProvider.LINES))
+			{
+				Region r_with = new Region(r);
+				r_with = r_with.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES);
+				CircuitExperiment exp_with = factory.get(r_with);
+				Region r_without = new Region(r);
+				r_without = r_without.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO);
+				CircuitExperiment exp_without = factory.get(r_without);
+				if (exp_with != null && exp_without != null)
+				{
+					et_t.add(exp_without, exp_with);
+					et_m.add(exp_without, exp_with);
+				}
+			}
+			Scatterplot plot_t = new Scatterplot(et_t);
+			plot_t.setTitle(et_t.getTitle());
+			plot_t.setCaption(Axis.X, "Time without (ms)").setCaption(Axis.Y, "Time with (ms)");
+			plot_t.withLines(false);
+			l_namer.setNickname(plot_t, sub_r, "pTrackingImpactTime", "");
+			add(plot_t);
+			Scatterplot plot_m = new Scatterplot(et_m);
+			plot_m.setTitle(et_m.getTitle());
+			plot_m.setCaption(Axis.X, "Memory without (B)").setCaption(Axis.Y, "Memory with (B)");
+			plot_m.withLines(false);
+			l_namer.setNickname(plot_m, sub_r, "pTrackingImpactMemory", "");
+			add(plot_m);
+		}
+
 		// Size of an empty queryable
 		add(new QueryableSize(this));
 	}
-	
+
 	public static void main(String[] args)
 	{
 		initialize(args, MainLab.class);

@@ -41,6 +41,10 @@ public class CircuitExperimentFactory extends ExperimentFactory<MainLab,CircuitE
 			return null;
 		}
 		CircuitExperiment ce = new CircuitExperiment(fp, ip);
+		if (r.getString(CircuitExperiment.TRACKING_ENABLED).compareTo(CircuitExperiment.TRACKING_NO) == 0)
+		{
+			ce.enableTracking(false);
+		}
 		return ce;
 	}
 	
