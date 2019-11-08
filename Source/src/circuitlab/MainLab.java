@@ -43,6 +43,9 @@ public class MainLab extends Laboratory
 	@Override
 	public void setup() 
 	{
+		// Metadata
+		setAuthor("Sylvain Hallé, Hugo Tremblay");
+		
 		// The factory to create the experiments
 		CircuitExperimentFactory factory = new CircuitExperimentFactory(this);
 
@@ -92,6 +95,7 @@ public class MainLab extends Laboratory
 			et_m.setTitle("Impact of enabling tracking on memory");
 			l_namer.setNickname(et_m, sub_r, "tTrackingImpactMemory", "");
 			add(et_m);
+			/* TODO: il faut comparer taille du queryable vs taille de l'arbre */
 			CategoryVersusTable et_m_s = new CategoryVersusTable(TOTAL_MEM_SQUASHED, FUNCTION, "Memory (without)");
 			et_m_s.setTitle("Impact of enabling tracking on memory (squashed version)");
 			l_namer.setNickname(et_m_s, sub_r, "tTrackingImpactMemorySquashed", "");

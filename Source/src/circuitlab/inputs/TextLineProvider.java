@@ -20,6 +20,7 @@ package circuitlab.inputs;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.uqac.lif.labpal.Random;
 import ca.uqac.lif.labpal.Region;
 import circuitlab.CircuitExperiment;
 import circuitlab.InputProvider;
@@ -41,19 +42,36 @@ public class TextLineProvider implements InputProvider
 	 */
 	protected int m_numLines;
 	
-	public TextLineProvider(int num_lines)
+	/**
+	 * The random number generator used to produce values
+	 */
+	protected transient Random m_random;
+	
+	protected float m_threshold = 0.01f;
+	
+	public TextLineProvider(int num_lines, Random r)
 	{
 		super();
 		m_numLines = num_lines;
+		m_random = r;
 	}
 
 	@Override
 	public Object[] getInput() 
 	{
+		m_random.reseed();
 		List<String> lines = new ArrayList<String>(m_numLines);
 		for (int i = 0; i < m_numLines; i++)
 		{
-			String line = "foo,40,bar";
+			String value = "4";
+			float f = m_random.nextFloat();
+			//if (f < m_threshold)
+			if (i == 0)
+			{
+				value = "-80";
+				System.out.println("ARF");
+			}
+			String line = "foo," + value + ",bar";
 			lines.add(line);
 		}
 		return new Object[] {lines};
@@ -90,9 +108,9 @@ public class TextLineProvider implements InputProvider
 		return ((TextLineProvider) o).m_numLines == m_numLines;
 	}
 	
-	public static TextLineProvider getProvider(Region r)
+	public static TextLineProvider getProvider(Region r, Random rand)
 	{
 		int num_lines = r.getInt(LINES);
-		return new TextLineProvider(num_lines);
+		return new TextLineProvider(num_lines, rand);
 	}
 }

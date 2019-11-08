@@ -140,7 +140,8 @@ public class CircuitExperiment extends Experiment
 		MapSizePrinter msp = new MapSizePrinter();
 		ConcreteTracer tracer = new ConcreteTracer();
 		ConcreteTraceabilityTree tree = tracer.trace(CausalityQuery.instance, NthOutput.get(0), q);
-		TraceabilityNode tn_squashed = tracer.squash(tree.getRoot());
+		ConcreteTracer squash_tracer = new ConcreteTracer();
+		TraceabilityNode tn_squashed = squash_tracer.squash(tree.getRoot());
 		int q_size = 0, f_size = 0, q_size_squashed = 0;
 		try
 		{

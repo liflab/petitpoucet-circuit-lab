@@ -63,7 +63,7 @@ public class AverageWindow implements FunctionProvider
 			global.associateInput(0, tonum, 0);
 			CircuitFunction avg_win = new CircuitFunction(new SlidingWindow(3, Numbers.avg));
 			global.connect(tonum, 0, avg_win, 0);
-			GroupFunction gt2 = new GroupFunction(1, 1).setName("GT 30?");
+			GroupFunction gt2 = new GroupFunction(1, 1).setName("GT 3?");
 			{
 				CircuitFunction igt = new CircuitFunction(Numbers.isGreaterThan);
 				CircuitFunction two = new CircuitFunction(new Constant(3));
@@ -76,7 +76,9 @@ public class AverageWindow implements FunctionProvider
 			global.connect(avg_win, 0, igt2, 0);
 			CircuitFunction g = new CircuitFunction(Ltl.globally);
 			global.connect(igt2, 0, g, 0);
-			global.associateOutput(0, g, 0);
+			CircuitFunction first = new CircuitFunction(new GetElement(0));
+			global.connect(g, 0, first, 0);
+			global.associateOutput(0, first, 0);
 		}
 		return global;
 	}
