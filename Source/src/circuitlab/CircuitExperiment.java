@@ -25,7 +25,12 @@ import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.mtnp.util.FileHelper;
 import ca.uqac.lif.petitpoucet.Queryable;
+import ca.uqac.lif.petitpoucet.TraceabilityNode;
+import ca.uqac.lif.petitpoucet.TraceabilityQuery.CausalityQuery;
+import ca.uqac.lif.petitpoucet.circuit.CircuitDesignator.NthOutput;
 import ca.uqac.lif.petitpoucet.functions.Function;
+import ca.uqac.lif.petitpoucet.graph.ConcreteTraceabilityTree;
+import ca.uqac.lif.petitpoucet.graph.ConcreteTracer;
 import circuitlab.MapSizePrinter.SizeEntry;
 
 public class CircuitExperiment extends Experiment
@@ -46,6 +51,11 @@ public class CircuitExperiment extends Experiment
 	public static final transient String SIZE = "Queryable size";
 	
 	/**
+	 * The parameter "designation graph size"
+	 */
+	public static final transient String GRAPH_SIZE = "Designation graph size";
+	
+	/**
 	 * The parameter "evaluation time"
 	 */
 	public static final transient String EVAL_TIME = "Evaluation time";
@@ -54,6 +64,11 @@ public class CircuitExperiment extends Experiment
 	 * The parameter "total memory"
 	 */
 	public static final transient String TOTAL_MEM = "Total memory";
+	
+	/**
+	 * The parameter "total memory squashed"
+	 */
+	public static final transient String TOTAL_MEM_SQUASHED = "Total memory squashed";
 	
 	/**
 	 * The parameter "tracking enabled"
@@ -75,6 +90,8 @@ public class CircuitExperiment extends Experiment
 		super();
 		describe(SIZE, "The size (in bytes) of the queryable resulting from the evaluation of the circuit");
 		describe(TOTAL_MEM, "The total memory consumption (in bytes) resulting from the evaluation of the circuit");
+		describe(TOTAL_MEM_SQUASHED, "The total memory consumption (in bytes) resulting from the evaluation of the circuit, by counting only the size of the designation tree");
+		describe(GRAPH_SIZE, "The size of the designation graph (in bytes)");
 		describe(EVAL_TIME, "The time (in ms) required to evaluate the circuit on the input");
 		describe(TRACKING_ENABLED, "Whether lineage tracking is enabled for the evaluation of the circuit");
 		setInput(TRACKING_ENABLED, TRACKING_YES);
@@ -119,11 +136,16 @@ public class CircuitExperiment extends Experiment
 		write(EVAL_TIME, end_time - start_time);
 		SizePrinter size_q = new SizePrinter();
 		SizePrinter size_f = new SizePrinter();
+		SizePrinter size_t = new SizePrinter();
 		MapSizePrinter msp = new MapSizePrinter();
-		int q_size = 0, f_size = 0;
+		ConcreteTracer tracer = new ConcreteTracer();
+		ConcreteTraceabilityTree tree = tracer.trace(CausalityQuery.instance, NthOutput.get(0), q);
+		TraceabilityNode tn_squashed = tracer.squash(tree.getRoot());
+		int q_size = 0, f_size = 0, q_size_squashed = 0;
 		try
 		{
 			q_size = size_q.print(q).intValue();
+			q_size_squashed = size_t.print(tn_squashed).intValue();
 			f_size = size_f.print(f).intValue();
 			//SizeEntry se = msp.print(q);
 			//FileHelper.writeFromString(new File("/tmp/out.txt"), se.toString());
@@ -133,7 +155,9 @@ public class CircuitExperiment extends Experiment
 			throw new ExperimentException(e);
 		}
 		write(SIZE, q_size);
+		write(GRAPH_SIZE, q_size_squashed);
 		write(TOTAL_MEM, q_size + f_size);
+		write(TOTAL_MEM_SQUASHED, q_size_squashed + f_size);
 	}
 
 }

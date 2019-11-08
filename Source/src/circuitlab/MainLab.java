@@ -20,6 +20,7 @@ package circuitlab;
 import static circuitlab.CircuitExperiment.EVAL_TIME;
 import static circuitlab.CircuitExperiment.SIZE;
 import static circuitlab.CircuitExperiment.TOTAL_MEM;
+import static circuitlab.CircuitExperiment.TOTAL_MEM_SQUASHED;
 import static circuitlab.CircuitExperiment.TRACKING_ENABLED;
 import static circuitlab.FunctionProvider.FUNCTION;
 import static circuitlab.InputProvider.INPUT_NAME;
@@ -28,7 +29,6 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.labpal.table.VersusTable;
 import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
@@ -56,7 +56,7 @@ public class MainLab extends Laboratory
 		Region big_r = new Region();
 		big_r.add(FUNCTION, GetAllNumbers.GET_ALL_NUMBERS, AverageWindow.AVERAGE_WINDOW);
 		big_r.add(INPUT_NAME, TextLineProvider.CSV_FILE);
-		big_r.add(TextLineProvider.LINES, 1, 1000, 5000, 10000, 20000);
+		big_r.add(TextLineProvider.LINES, 1, 10, 1000, 2000, 5000, 10000);
 		big_r.add(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO, CircuitExperiment.TRACKING_YES);
 
 		// Impact of file length
@@ -84,14 +84,18 @@ public class MainLab extends Laboratory
 		// Impact of enabling tracking
 		{
 			Region sub_r = new Region(big_r);
-			VersusTable et_t = new VersusTable(EVAL_TIME, "Time (without)", "Time (with)");
+			CategoryVersusTable et_t = new CategoryVersusTable(EVAL_TIME, FUNCTION, "Time (without)");
 			et_t.setTitle("Impact of enabling tracking on execution time");
 			l_namer.setNickname(et_t, sub_r, "tTrackingImpactTime", "");
 			add(et_t);
-			VersusTable et_m = new VersusTable(TOTAL_MEM, "Memory (without)", "Memory (with)");
+			CategoryVersusTable et_m = new CategoryVersusTable(TOTAL_MEM, FUNCTION, "Memory (without)");
 			et_m.setTitle("Impact of enabling tracking on memory");
 			l_namer.setNickname(et_m, sub_r, "tTrackingImpactMemory", "");
 			add(et_m);
+			CategoryVersusTable et_m_s = new CategoryVersusTable(TOTAL_MEM_SQUASHED, FUNCTION, "Memory (without)");
+			et_m_s.setTitle("Impact of enabling tracking on memory (squashed version)");
+			l_namer.setNickname(et_m_s, sub_r, "tTrackingImpactMemorySquashed", "");
+			add(et_m_s);
 			for (Region r : sub_r.all(FUNCTION, TextLineProvider.LINES))
 			{
 				Region r_with = new Region(r);
@@ -104,6 +108,7 @@ public class MainLab extends Laboratory
 				{
 					et_t.add(exp_without, exp_with);
 					et_m.add(exp_without, exp_with);
+					et_m_s.add(exp_without, exp_with);
 				}
 			}
 			Scatterplot plot_t = new Scatterplot(et_t);
@@ -115,13 +120,23 @@ public class MainLab extends Laboratory
 			Scatterplot plot_m = new Scatterplot(et_m);
 			plot_m.setTitle(et_m.getTitle());
 			plot_m.setCaption(Axis.X, "Memory without (B)").setCaption(Axis.Y, "Memory with (B)");
-			plot_m.withLines(false);
+			plot_m.withLines(true);
 			l_namer.setNickname(plot_m, sub_r, "pTrackingImpactMemory", "");
 			add(plot_m);
+			Scatterplot plot_m_s = new Scatterplot(et_m_s);
+			plot_m_s.setTitle(et_m_s.getTitle());
+			plot_m_s.setCaption(Axis.X, "Memory without (B)").setCaption(Axis.Y, "Memory with (B)");
+			plot_m_s.withLines(true);
+			l_namer.setNickname(plot_m_s, sub_r, "pTrackingImpactMemorySquashed", "");
+			add(plot_m_s);
 		}
 
 		// Size of an empty queryable
 		add(new QueryableSize(this));
+		
+		// Blow-up macros
+		add(new BlowupMacro(TOTAL_MEM, this, factory, big_r));
+		add(new BlowupMacro(EVAL_TIME, this, factory, big_r));
 	}
 
 	public static void main(String[] args)
