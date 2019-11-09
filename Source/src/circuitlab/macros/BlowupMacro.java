@@ -1,4 +1,4 @@
-package circuitlab;
+package circuitlab.macros;
 
 import static circuitlab.CircuitExperiment.TRACKING_ENABLED;
 import static circuitlab.FunctionProvider.FUNCTION;
@@ -17,6 +17,9 @@ import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
 import ca.uqac.lif.labpal.macro.MacroMap;
 import ca.uqac.lif.labpal.table.VersusTable.ExperimentPair;
+import circuitlab.CircuitExperiment;
+import circuitlab.CircuitExperimentFactory;
+import circuitlab.FunctionProvider;
 import circuitlab.inputs.TextLineProvider;
 
 public class BlowupMacro extends MacroMap

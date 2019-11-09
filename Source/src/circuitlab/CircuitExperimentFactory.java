@@ -53,7 +53,7 @@ public class CircuitExperimentFactory extends ExperimentFactory<MainLab,CircuitE
 		String name = r.getString(InputProvider.INPUT_NAME);
 		if (name.compareTo(TextLineProvider.CSV_FILE) == 0)
 		{
-			return TextLineProvider.getProvider(r, m_lab.getRandom());
+			return TextLineProvider.getProvider(r, MainLab.s_threshold, m_lab.getRandom());
 		}
 		return null;
 	}

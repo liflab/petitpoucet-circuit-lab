@@ -43,6 +43,11 @@ public class CategoryVersusTable extends VersusTable
 	protected String m_category;
 	
 	/**
+	 * The name of the parameter to read in the second experiment
+	 */
+	protected String m_parameterY;
+	
+	/**
 	 * The name of all the categories seen in the table
 	 */
 	protected List<String> m_categories;
@@ -60,15 +65,29 @@ public class CategoryVersusTable extends VersusTable
 	/**
 	 * Creates a new empty table
 	 * @param parameter The name of the parameter to read in each experiment
+	 * @param parameter_y The name of the parameter to read in each experiment
 	 * @param category The name of the parameter in each experiment used as the category
 	 * @param caption_x The name of the first column
 	 */
 	public CategoryVersusTable(String parameter, String category, String caption_x)
 	{
-		super(parameter, caption_x, "");
+		this(parameter, parameter, category, caption_x);
+	}
+	
+	/**
+	 * Creates a new empty table
+	 * @param parameter_x The name of the parameter to read in the first experiment
+	 * @param parameter_y The name of the parameter to read in the second experiment
+	 * @param category The name of the parameter in each experiment used as the category
+	 * @param caption_x The name of the first column
+	 */
+	public CategoryVersusTable(String parameter_x, String parameter_y, String category, String caption_x)
+	{
+		super(parameter_x, caption_x, "");
 		m_category = category;
 		m_categories = new ArrayList<String>();
 		m_categories.add(caption_x);
+		m_parameterY = parameter_y;
 	}
 	
 	@Override
@@ -101,7 +120,7 @@ public class CategoryVersusTable extends VersusTable
 		for (ExperimentPair pair : m_pairs)
 		{
 			Object x = pair.getExperimentX().read(m_parameter);
-			Object y = pair.getExperimentY().read(m_parameter);
+			Object y = pair.getExperimentY().read(m_parameterY);
 			if (x == null || y == null || x instanceof JsonNull || y instanceof JsonNull)
 			{
 				continue;

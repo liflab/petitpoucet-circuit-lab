@@ -18,6 +18,7 @@
 package circuitlab;
 
 import static circuitlab.CircuitExperiment.EVAL_TIME;
+import static circuitlab.CircuitExperiment.GRAPH_SIZE;
 import static circuitlab.CircuitExperiment.SIZE;
 import static circuitlab.CircuitExperiment.TOTAL_MEM;
 import static circuitlab.CircuitExperiment.TOTAL_MEM_SQUASHED;
@@ -36,16 +37,23 @@ import ca.uqac.lif.mtnp.table.TransformedTable;
 import circuitlab.circuits.AverageWindow;
 import circuitlab.circuits.GetAllNumbers;
 import circuitlab.inputs.TextLineProvider;
+import circuitlab.macros.BlowupMacro;
+import circuitlab.macros.LabStats;
+import circuitlab.macros.QueryableSize;
+import circuitlab.macros.SingleExperimentData;
+import circuitlab.macros.ThresholdMacro;
+import circuitlab.plots.CustomScatterplot;
 
 public class MainLab extends Laboratory
 {
+	protected static float s_threshold = 0.01f;
 
 	@Override
 	public void setup() 
 	{
 		// Metadata
 		setAuthor("Sylvain Hallé, Hugo Tremblay");
-		
+
 		// The factory to create the experiments
 		CircuitExperimentFactory factory = new CircuitExperimentFactory(this);
 
@@ -59,7 +67,7 @@ public class MainLab extends Laboratory
 		Region big_r = new Region();
 		big_r.add(FUNCTION, GetAllNumbers.GET_ALL_NUMBERS, AverageWindow.AVERAGE_WINDOW);
 		big_r.add(INPUT_NAME, TextLineProvider.CSV_FILE);
-		big_r.add(TextLineProvider.LINES, 1, 10, 1000, 2000, 5000, 10000);
+		big_r.add(TextLineProvider.LINES, 5, 10, 1000, 2000, 5000, 10000);
 		big_r.add(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO, CircuitExperiment.TRACKING_YES);
 
 		// Impact of file length
@@ -83,7 +91,7 @@ public class MainLab extends Laboratory
 			l_namer.setNickname(plot, sub_r, "pFileLen", "");
 			add(plot);
 		}
-		
+
 		// Impact of enabling tracking
 		{
 			Region sub_r = new Region(big_r);
@@ -95,8 +103,7 @@ public class MainLab extends Laboratory
 			et_m.setTitle("Impact of enabling tracking on memory");
 			l_namer.setNickname(et_m, sub_r, "tTrackingImpactMemory", "");
 			add(et_m);
-			/* TODO: il faut comparer taille du queryable vs taille de l'arbre */
-			CategoryVersusTable et_m_s = new CategoryVersusTable(TOTAL_MEM_SQUASHED, FUNCTION, "Memory (without)");
+			CategoryVersusTable et_m_s = new CategoryVersusTable(SIZE, GRAPH_SIZE, FUNCTION, "Memory (full)");
 			et_m_s.setTitle("Impact of enabling tracking on memory (squashed version)");
 			l_namer.setNickname(et_m_s, sub_r, "tTrackingImpactMemorySquashed", "");
 			add(et_m_s);
@@ -112,35 +119,44 @@ public class MainLab extends Laboratory
 				{
 					et_t.add(exp_without, exp_with);
 					et_m.add(exp_without, exp_with);
-					et_m_s.add(exp_without, exp_with);
+					et_m_s.add(exp_with, exp_with);
 				}
 			}
-			Scatterplot plot_t = new Scatterplot(et_t);
+			Scatterplot plot_t = new CustomScatterplot(et_t);
 			plot_t.setTitle(et_t.getTitle());
 			plot_t.setCaption(Axis.X, "Time without (ms)").setCaption(Axis.Y, "Time with (ms)");
 			plot_t.withLines(false);
 			l_namer.setNickname(plot_t, sub_r, "pTrackingImpactTime", "");
 			add(plot_t);
-			Scatterplot plot_m = new Scatterplot(et_m);
+			Scatterplot plot_m = new CustomScatterplot(et_m);
 			plot_m.setTitle(et_m.getTitle());
 			plot_m.setCaption(Axis.X, "Memory without (B)").setCaption(Axis.Y, "Memory with (B)");
-			plot_m.withLines(true);
+			plot_m.withLines(false);
 			l_namer.setNickname(plot_m, sub_r, "pTrackingImpactMemory", "");
 			add(plot_m);
-			Scatterplot plot_m_s = new Scatterplot(et_m_s);
+			Scatterplot plot_m_s = new CustomScatterplot(et_m_s);
 			plot_m_s.setTitle(et_m_s.getTitle());
 			plot_m_s.setCaption(Axis.X, "Memory without (B)").setCaption(Axis.Y, "Memory with (B)");
-			plot_m_s.withLines(true);
+			plot_m_s.withLines(false);
 			l_namer.setNickname(plot_m_s, sub_r, "pTrackingImpactMemorySquashed", "");
 			add(plot_m_s);
 		}
 
 		// Size of an empty queryable
 		add(new QueryableSize(this));
-		
+
 		// Blow-up macros
 		add(new BlowupMacro(TOTAL_MEM, this, factory, big_r));
 		add(new BlowupMacro(EVAL_TIME, this, factory, big_r));
+
+		// Threshold for explanation queries
+		add(new ThresholdMacro(this, s_threshold));
+
+		// Stats for a single experiment taken as an example in the text
+		add(new SingleExperimentData(this, big_r.set(FUNCTION, AverageWindow.AVERAGE_WINDOW)
+				.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES)
+				.set(INPUT_NAME, TextLineProvider.CSV_FILE)
+				.set(TextLineProvider.LINES, 10000)));
 	}
 
 	public static void main(String[] args)

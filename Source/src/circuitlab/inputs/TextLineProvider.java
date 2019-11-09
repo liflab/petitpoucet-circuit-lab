@@ -49,11 +49,12 @@ public class TextLineProvider implements InputProvider
 	
 	protected float m_threshold = 0.01f;
 	
-	public TextLineProvider(int num_lines, Random r)
+	public TextLineProvider(int num_lines, float threshold, Random r)
 	{
 		super();
 		m_numLines = num_lines;
 		m_random = r;
+		m_threshold = threshold;
 	}
 
 	@Override
@@ -65,8 +66,8 @@ public class TextLineProvider implements InputProvider
 		{
 			String value = "4";
 			float f = m_random.nextFloat();
-			//if (f < m_threshold)
-			if (i == 0)
+			if (f < m_threshold)
+			//if (i == 0)
 			{
 				value = "-80";
 				System.out.println("ARF");
@@ -108,9 +109,9 @@ public class TextLineProvider implements InputProvider
 		return ((TextLineProvider) o).m_numLines == m_numLines;
 	}
 	
-	public static TextLineProvider getProvider(Region r, Random rand)
+	public static TextLineProvider getProvider(Region r, float threshold, Random rand)
 	{
 		int num_lines = r.getInt(LINES);
-		return new TextLineProvider(num_lines, rand);
+		return new TextLineProvider(num_lines, threshold, rand);
 	}
 }

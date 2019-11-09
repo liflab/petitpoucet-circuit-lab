@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package circuitlab;
+package circuitlab.macros;
 
 import java.util.Map;
 
@@ -27,6 +27,7 @@ import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.macro.MacroMap;
+import circuitlab.MainLab;
 
 /**
  * Macro map producing various statistics about the experimental results

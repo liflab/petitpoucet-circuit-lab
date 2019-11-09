@@ -1,4 +1,4 @@
-package circuitlab;
+package circuitlab.macros;
 
 import java.util.Map;
 
