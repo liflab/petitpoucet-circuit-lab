@@ -56,9 +56,11 @@ public class GetAllNumbers implements FunctionProvider
 		}
 		GroupFunction all = new GroupFunction(1, 1);
 		CircuitFunction cf = new CircuitFunction(new ApplyToAll(get));
-		all.add(cf);
+		CircuitFunction first = new CircuitFunction(new GetElement(0));
+		all.add(cf, first);
+		all.connect(cf, 0, first, 0);
 		all.associateInput(0, cf, 0);
-		all.associateOutput(0, cf, 0);
+		all.associateOutput(0, first, 0);
 		return all;
 		
 	}

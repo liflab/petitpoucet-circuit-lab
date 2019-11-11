@@ -18,10 +18,10 @@
 package circuitlab;
 
 import static circuitlab.CircuitExperiment.EVAL_TIME;
+import static circuitlab.CircuitExperiment.GRAPH_GEN_TIME;
 import static circuitlab.CircuitExperiment.GRAPH_SIZE;
-import static circuitlab.CircuitExperiment.SIZE;
+import static circuitlab.CircuitExperiment.QUERYABLE_SIZE;
 import static circuitlab.CircuitExperiment.TOTAL_MEM;
-import static circuitlab.CircuitExperiment.TOTAL_MEM_SQUASHED;
 import static circuitlab.CircuitExperiment.TRACKING_ENABLED;
 import static circuitlab.FunctionProvider.FUNCTION;
 import static circuitlab.InputProvider.INPUT_NAME;
@@ -37,11 +37,14 @@ import ca.uqac.lif.mtnp.table.TransformedTable;
 import circuitlab.circuits.AverageWindow;
 import circuitlab.circuits.GetAllNumbers;
 import circuitlab.inputs.TextLineProvider;
-import circuitlab.macros.BlowupMacro;
+import circuitlab.macros.Blowup;
 import circuitlab.macros.LabStats;
+import circuitlab.macros.MaxBlowupTime;
+import circuitlab.macros.MaxGenerationTime;
 import circuitlab.macros.QueryableSize;
 import circuitlab.macros.SingleExperimentData;
-import circuitlab.macros.ThresholdMacro;
+import circuitlab.macros.LabThreshold;
+import circuitlab.macros.LinesOfCode;
 import circuitlab.plots.CustomScatterplot;
 
 public class MainLab extends Laboratory
@@ -67,29 +70,41 @@ public class MainLab extends Laboratory
 		Region big_r = new Region();
 		big_r.add(FUNCTION, GetAllNumbers.GET_ALL_NUMBERS, AverageWindow.AVERAGE_WINDOW);
 		big_r.add(INPUT_NAME, TextLineProvider.CSV_FILE);
-		big_r.add(TextLineProvider.LINES, 5, 10, 1000, 2000, 5000, 10000);
+		big_r.add(TextLineProvider.LINES, 10, 100, 1000, 2000, 5000, 10000, 15000);
 		big_r.add(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO, CircuitExperiment.TRACKING_YES);
 
 		// Impact of file length
 		{
 			Region sub_r = new Region(big_r);
 			sub_r = sub_r.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES);
-			ExperimentTable et = new ExperimentTable(TextLineProvider.LINES, FUNCTION, SIZE);
-			et.setShowInList(false);
+			ExperimentTable et_size = new ExperimentTable(TextLineProvider.LINES, FUNCTION, QUERYABLE_SIZE);
+			et_size.setShowInList(false);
+			ExperimentTable et_time = new ExperimentTable(TextLineProvider.LINES, FUNCTION, GRAPH_GEN_TIME);
+			et_time.setShowInList(false);
 			for (Region r : sub_r.all(FUNCTION, TextLineProvider.LINES))
 			{
 				CircuitExperiment exp = factory.get(r);
-				et.add(exp);
+				et_size.add(exp);
+				et_time.add(exp);
 			}
-			TransformedTable tt = new TransformedTable(new ExpandAsColumns(FUNCTION, SIZE), et);
-			tt.setTitle("Impact of file length");
-			l_namer.setNickname(tt, sub_r, "tFileLen", "");
-			add(tt);
-			Scatterplot plot = new Scatterplot(tt);
-			plot.setTitle(tt.getTitle());
-			plot.setCaption(Axis.X, "Length").setCaption(Axis.Y, "Size (B)");
-			l_namer.setNickname(plot, sub_r, "pFileLen", "");
-			add(plot);
+			TransformedTable tt_size = new TransformedTable(new ExpandAsColumns(FUNCTION, QUERYABLE_SIZE), et_size);
+			tt_size.setTitle("Impact of file length on queyrable size");
+			l_namer.setNickname(tt_size, sub_r, "tFileLenSize", "");
+			add(tt_size);
+			Scatterplot plot_size = new Scatterplot(tt_size);
+			plot_size.setTitle(tt_size.getTitle());
+			plot_size.setCaption(Axis.X, "Length").setCaption(Axis.Y, "Size (B)");
+			l_namer.setNickname(plot_size, sub_r, "pFileLenSize", "");
+			add(plot_size);
+			TransformedTable tt_time = new TransformedTable(new ExpandAsColumns(FUNCTION, GRAPH_GEN_TIME), et_time);
+			tt_time.setTitle("Impact of file length on graph generation time");
+			l_namer.setNickname(tt_time, sub_r, "tFileLenTime", "");
+			add(tt_time);
+			Scatterplot plot_time = new Scatterplot(tt_time);
+			plot_time.setTitle(tt_time.getTitle());
+			plot_time.setCaption(Axis.X, "Length").setCaption(Axis.Y, "Time (ms)");
+			l_namer.setNickname(plot_time, sub_r, "pFileLenTime", "");
+			add(plot_time);
 		}
 
 		// Impact of enabling tracking
@@ -103,7 +118,7 @@ public class MainLab extends Laboratory
 			et_m.setTitle("Impact of enabling tracking on memory");
 			l_namer.setNickname(et_m, sub_r, "tTrackingImpactMemory", "");
 			add(et_m);
-			CategoryVersusTable et_m_s = new CategoryVersusTable(SIZE, GRAPH_SIZE, FUNCTION, "Memory (full)");
+			CategoryVersusTable et_m_s = new CategoryVersusTable(QUERYABLE_SIZE, GRAPH_SIZE, FUNCTION, "Queryable size");
 			et_m_s.setTitle("Impact of enabling tracking on memory (squashed version)");
 			l_namer.setNickname(et_m_s, sub_r, "tTrackingImpactMemorySquashed", "");
 			add(et_m_s);
@@ -146,17 +161,24 @@ public class MainLab extends Laboratory
 		add(new QueryableSize(this));
 
 		// Blow-up macros
-		add(new BlowupMacro(TOTAL_MEM, this, factory, big_r));
-		add(new BlowupMacro(EVAL_TIME, this, factory, big_r));
+		add(new Blowup(TOTAL_MEM, this, factory, big_r));
+		add(new Blowup(EVAL_TIME, this, factory, big_r));
+		add(new MaxBlowupTime(this, factory, big_r));
+		
+		// Generation time for designation graphs
+		add(new MaxGenerationTime(this));
 
 		// Threshold for explanation queries
-		add(new ThresholdMacro(this, s_threshold));
+		add(new LabThreshold(this, s_threshold));
 
 		// Stats for a single experiment taken as an example in the text
 		add(new SingleExperimentData(this, big_r.set(FUNCTION, AverageWindow.AVERAGE_WINDOW)
 				.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES)
 				.set(INPUT_NAME, TextLineProvider.CSV_FILE)
 				.set(TextLineProvider.LINES, 10000)));
+		
+		// Lines of code in Petit Poucet
+		add(new LinesOfCode(this));
 	}
 
 	public static void main(String[] args)

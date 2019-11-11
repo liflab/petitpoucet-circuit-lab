@@ -1,9 +1,5 @@
 package circuitlab.macros;
 
-import static circuitlab.CircuitExperiment.TRACKING_ENABLED;
-import static circuitlab.FunctionProvider.FUNCTION;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,29 +8,20 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.Formatter;
-import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
-import ca.uqac.lif.labpal.macro.MacroMap;
 import ca.uqac.lif.labpal.table.VersusTable.ExperimentPair;
-import circuitlab.CircuitExperiment;
 import circuitlab.CircuitExperimentFactory;
 import circuitlab.FunctionProvider;
-import circuitlab.inputs.TextLineProvider;
+import circuitlab.MainLab;
 
-public class BlowupMacro extends MacroMap
-{
-	protected CircuitExperimentFactory m_factory;
-
-	protected Region m_region;
-
+public class Blowup extends ExperimentPairMacro
+{	
 	protected String m_parameter;
 
-	public BlowupMacro(String parameter, Laboratory lab, CircuitExperimentFactory factory, Region r) 
+	public Blowup(String parameter, MainLab lab, CircuitExperimentFactory factory, Region r) 
 	{
-		super(lab);
-		m_factory = factory;
-		m_region = r;
+		super(lab, factory, r);
 		m_parameter = parameter;
 		List<JsonElement> functions = r.getAll(FunctionProvider.FUNCTION);
 		for (JsonElement je : functions)
@@ -42,6 +29,7 @@ public class BlowupMacro extends MacroMap
 			String name = ((JsonString) je).stringValue();
 			add(getMacroName(name), "The blowup on " + m_parameter + " incurred by the use of lineage tracking for function " + name);
 		}
+		
 	}
 
 	@Override
@@ -50,21 +38,7 @@ public class BlowupMacro extends MacroMap
 		for (JsonElement je : m_region.getAll(FunctionProvider.FUNCTION))
 		{
 			String name = ((JsonString) je).stringValue();
-			Region sub_r = new Region(m_region).set(FunctionProvider.FUNCTION, name);
-			Set<ExperimentPair> pairs = new HashSet<ExperimentPair>();
-			for (Region r : sub_r.all(FUNCTION, TextLineProvider.LINES))
-			{
-				Region r_with = new Region(r);
-				r_with = r_with.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES);
-				CircuitExperiment exp_with = m_factory.get(r_with);
-				Region r_without = new Region(r);
-				r_without = r_without.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO);
-				CircuitExperiment exp_without = m_factory.get(r_without);
-				if (exp_with != null && exp_without != null)
-				{
-					pairs.add(new ExperimentPair(exp_without, exp_with));
-				}
-			}
+			Set<ExperimentPair> pairs = getPairs(name);
 			float total = 0f, num = 0f;
 			for (ExperimentPair pair : pairs)
 			{

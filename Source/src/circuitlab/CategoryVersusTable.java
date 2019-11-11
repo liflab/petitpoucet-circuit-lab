@@ -140,7 +140,7 @@ public class CategoryVersusTable extends VersusTable
 				entries.put(x_coord, te);
 			}
 			te.put(category, y);
-			te.addDependency(category, new ExperimentValue(pair.getExperimentY(), m_parameter));
+			te.addDependency(category, new ExperimentValue(pair.getExperimentY(), m_parameterY));
 		}
 		table.addAll(entries.values());
 		//System.out.println(table);

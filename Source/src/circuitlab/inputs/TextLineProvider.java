@@ -70,7 +70,6 @@ public class TextLineProvider implements InputProvider
 			//if (i == 0)
 			{
 				value = "-80";
-				System.out.println("ARF");
 			}
 			String line = "foo," + value + ",bar";
 			lines.add(line);

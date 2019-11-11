@@ -5,11 +5,11 @@ import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.macro.MacroScalar;
 import circuitlab.MainLab;
 
-public class ThresholdMacro extends MacroScalar
+public class LabThreshold extends MacroScalar
 {
 	protected float m_threshold;
 	
-	public ThresholdMacro(MainLab lab, float threshold)
+	public LabThreshold(MainLab lab, float threshold)
 	{
 		super(lab, "fractionInvolved", "The fraction of input elements that are involved in the designation tree");
 		m_threshold = threshold;
