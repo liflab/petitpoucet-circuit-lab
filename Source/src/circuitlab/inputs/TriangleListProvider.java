@@ -23,16 +23,16 @@ import java.util.List;
 import ca.uqac.lif.labpal.Random;
 import ca.uqac.lif.labpal.Region;
 import circuitlab.CircuitExperiment;
+import examples.Utilities;
 
-public class TextLineProvider extends RandomInputProvider
-{
-	
+public class TriangleListProvider extends RandomInputProvider 
+{	
 	/**
 	 * The name of this input provider
 	 */
-	public static final transient String CSV_FILE = "CSV file";
-	
-	public TextLineProvider(int num_lines, float threshold, Random r)
+	public static final transient String TRIANGLE_LIST = "Triangle list";
+
+	public TriangleListProvider(int num_lines, float threshold, Random r)
 	{
 		super(num_lines, threshold, r);
 	}
@@ -41,18 +41,16 @@ public class TextLineProvider extends RandomInputProvider
 	public Object[] getInput() 
 	{
 		m_random.reseed();
-		List<String> lines = new ArrayList<String>(m_numLines);
+		List<List<Object>> lines = new ArrayList<List<Object>>(m_numLines);
 		for (int i = 0; i < m_numLines; i++)
 		{
-			String value = "4";
+			List<Object> triangle_list = Utilities.createList(3, 4, 5);
 			float f = m_random.nextFloat();
-			if (f < m_threshold)
-			//if (i == 0)
+			if (f > m_threshold)
 			{
-				value = "-80";
+				triangle_list = Utilities.createList(2, "foo", 3);
 			}
-			String line = "foo," + value + ",bar";
-			lines.add(line);
+			lines.add(triangle_list);
 		}
 		return new Object[] {lines};
 	}
@@ -61,31 +59,25 @@ public class TextLineProvider extends RandomInputProvider
 	public void writeInto(CircuitExperiment e) 
 	{
 		super.writeInto(e);
-		e.describe(LINES, "The number of lines in the input file");
+		e.describe(LINES, "The number of triangles in the input file");
 	}
-	
+
 	@Override
 	public String getName()
 	{
-		return CSV_FILE;
+		return TRIANGLE_LIST;
 	}
-	
-	@Override
-	public int hashCode()
-	{
-		return m_numLines;
-	}
-	
+
 	@Override
 	public boolean equals(Object o)
 	{
-		if (o == null || !(o instanceof TextLineProvider))
+		if (o == null || !(o instanceof TriangleListProvider))
 		{
 			return false;
 		}
-		return ((TextLineProvider) o).m_numLines == m_numLines;
+		return ((TriangleListProvider) o).m_numLines == m_numLines;
 	}
-	
+
 	/**
 	 * Static factory method to obtain an instance of this provider
 	 * @param num_lines The number of input elements to produce
@@ -93,9 +85,9 @@ public class TextLineProvider extends RandomInputProvider
 	 * @param r The random number generator used to produce values
 	 * @return An instance of this provider
 	 */
-	public static TextLineProvider getProvider(Region r, float threshold, Random rand)
+	public static TriangleListProvider getProvider(Region r, float threshold, Random rand)
 	{
 		int num_lines = r.getInt(LINES);
-		return new TextLineProvider(num_lines, threshold, rand);
+		return new TriangleListProvider(num_lines, threshold, rand);
 	}
 }

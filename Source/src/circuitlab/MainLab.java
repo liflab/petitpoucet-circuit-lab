@@ -35,8 +35,12 @@ import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.mtnp.table.TransformedTable;
 import circuitlab.circuits.AverageWindow;
+import circuitlab.circuits.BoundingBoxes;
 import circuitlab.circuits.GetAllNumbers;
+import circuitlab.circuits.SumTriangleAreas;
 import circuitlab.inputs.TextLineProvider;
+import circuitlab.inputs.TriangleListProvider;
+import circuitlab.inputs.WebPageProvider;
 import circuitlab.macros.Blowup;
 import circuitlab.macros.LabStats;
 import circuitlab.macros.MaxBlowupTime;
@@ -67,21 +71,21 @@ public class MainLab extends Laboratory
 		LatexNamer l_namer = new LatexNamer();
 
 		// Setup of global region
-		Region big_r = new Region();
-		big_r.add(FUNCTION, GetAllNumbers.GET_ALL_NUMBERS, AverageWindow.AVERAGE_WINDOW);
-		big_r.add(INPUT_NAME, TextLineProvider.CSV_FILE);
+		CompatibleRegion big_r = new CompatibleRegion();
+		big_r.add(FUNCTION, GetAllNumbers.GET_ALL_NUMBERS, AverageWindow.AVERAGE_WINDOW, SumTriangleAreas.TRIANGLE_AREAS, BoundingBoxes.BOUNDING_BOXES);
+		big_r.add(INPUT_NAME, TextLineProvider.CSV_FILE, TriangleListProvider.TRIANGLE_LIST, WebPageProvider.WEB_PAGE);
 		big_r.add(TextLineProvider.LINES, 10, 100, 1000, 2000, 5000, 10000, 15000);
 		big_r.add(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO, CircuitExperiment.TRACKING_YES);
 
 		// Impact of file length
 		{
-			Region sub_r = new Region(big_r);
+			CompatibleRegion sub_r = new CompatibleRegion(big_r);
 			sub_r = sub_r.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES);
 			ExperimentTable et_size = new ExperimentTable(TextLineProvider.LINES, FUNCTION, QUERYABLE_SIZE);
 			et_size.setShowInList(false);
 			ExperimentTable et_time = new ExperimentTable(TextLineProvider.LINES, FUNCTION, GRAPH_GEN_TIME);
 			et_time.setShowInList(false);
-			for (Region r : sub_r.all(FUNCTION, TextLineProvider.LINES))
+			for (Region r : sub_r.all(FUNCTION, InputProvider.INPUT_NAME, TextLineProvider.LINES))
 			{
 				CircuitExperiment exp = factory.get(r);
 				et_size.add(exp);
@@ -109,7 +113,7 @@ public class MainLab extends Laboratory
 
 		// Impact of enabling tracking
 		{
-			Region sub_r = new Region(big_r);
+			CompatibleRegion sub_r = new CompatibleRegion(big_r);
 			CategoryVersusTable et_t = new CategoryVersusTable(EVAL_TIME, FUNCTION, "Time (without)");
 			et_t.setTitle("Impact of enabling tracking on execution time");
 			l_namer.setNickname(et_t, sub_r, "tTrackingImpactTime", "");
@@ -122,12 +126,12 @@ public class MainLab extends Laboratory
 			et_m_s.setTitle("Impact of enabling tracking on memory (squashed version)");
 			l_namer.setNickname(et_m_s, sub_r, "tTrackingImpactMemorySquashed", "");
 			add(et_m_s);
-			for (Region r : sub_r.all(FUNCTION, TextLineProvider.LINES))
+			for (Region r : sub_r.all(FUNCTION, InputProvider.INPUT_NAME, TextLineProvider.LINES))
 			{
-				Region r_with = new Region(r);
+				CompatibleRegion r_with = new CompatibleRegion(r);
 				r_with = r_with.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES);
 				CircuitExperiment exp_with = factory.get(r_with);
-				Region r_without = new Region(r);
+				CompatibleRegion r_without = new CompatibleRegion(r);
 				r_without = r_without.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO);
 				CircuitExperiment exp_without = factory.get(r_without);
 				if (exp_with != null && exp_without != null)
@@ -164,7 +168,7 @@ public class MainLab extends Laboratory
 		add(new Blowup(TOTAL_MEM, this, factory, big_r));
 		add(new Blowup(EVAL_TIME, this, factory, big_r));
 		add(new MaxBlowupTime(this, factory, big_r));
-		
+
 		// Generation time for designation graphs
 		add(new MaxGenerationTime(this));
 
@@ -176,7 +180,7 @@ public class MainLab extends Laboratory
 				.set(TRACKING_ENABLED, CircuitExperiment.TRACKING_YES)
 				.set(INPUT_NAME, TextLineProvider.CSV_FILE)
 				.set(TextLineProvider.LINES, 10000)));
-		
+
 		// Lines of code in Petit Poucet
 		add(new LinesOfCode(this));
 	}
@@ -184,5 +188,68 @@ public class MainLab extends Laboratory
 	public static void main(String[] args)
 	{
 		initialize(args, MainLab.class);
+	}
+
+	public static class CompatibleRegion extends Region
+	{
+		public CompatibleRegion()
+		{
+			super();
+		}
+
+		public CompatibleRegion(Region r)
+		{
+			super(r);
+		}
+
+		@Override
+		public CompatibleRegion set(String name, String value)
+		{
+			Region r = super.set(name, value);
+			return new CompatibleRegion(r);
+		}
+
+		@Override
+		public boolean isInRegion(Region point)
+		{
+			String fct = point.getString(FUNCTION);
+			String pro = point.getString(INPUT_NAME);
+			//System.out.println(fct + "," + pro);
+			if (pro.compareTo(TriangleListProvider.TRIANGLE_LIST) == 0)
+			{
+				if (fct.compareTo(SumTriangleAreas.TRIANGLE_AREAS) == 0)
+				{
+					return true;
+				}
+			}
+			if (pro.compareTo(TextLineProvider.CSV_FILE) == 0)
+			{
+				if (fct.compareTo(GetAllNumbers.GET_ALL_NUMBERS) == 0 ||
+						fct.compareTo(AverageWindow.AVERAGE_WINDOW) == 0)
+				{
+					return true;
+				}
+			}
+			if (pro.compareTo(WebPageProvider.WEB_PAGE) == 0)
+			{
+				if (fct.compareTo(BoundingBoxes.BOUNDING_BOXES) == 0)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		protected CompatibleRegion getRegion(Region r)
+		{
+			return new CompatibleRegion(r);
+		}
+
+		@Override
+		protected CompatibleRegion getEmptyRegion()
+		{
+			return new CompatibleRegion();
+		}
 	}
 }

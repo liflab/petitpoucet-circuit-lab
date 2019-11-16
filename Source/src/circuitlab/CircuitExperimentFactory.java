@@ -21,8 +21,12 @@ import ca.uqac.lif.labpal.ExperimentFactory;
 import ca.uqac.lif.labpal.Region;
 import circuitlab.MainLab;
 import circuitlab.circuits.AverageWindow;
+import circuitlab.circuits.BoundingBoxes;
 import circuitlab.circuits.GetAllNumbers;
+import circuitlab.circuits.SumTriangleAreas;
 import circuitlab.inputs.TextLineProvider;
+import circuitlab.inputs.TriangleListProvider;
+import circuitlab.inputs.WebPageProvider;
 
 public class CircuitExperimentFactory extends ExperimentFactory<MainLab,CircuitExperiment>
 {
@@ -55,6 +59,14 @@ public class CircuitExperimentFactory extends ExperimentFactory<MainLab,CircuitE
 		{
 			return TextLineProvider.getProvider(r, MainLab.s_threshold, m_lab.getRandom());
 		}
+		if (name.compareTo(TriangleListProvider.TRIANGLE_LIST) == 0)
+		{
+			return TriangleListProvider.getProvider(r, MainLab.s_threshold, m_lab.getRandom());
+		}
+		if (name.compareTo(WebPageProvider.WEB_PAGE) == 0)
+		{
+			return WebPageProvider.getProvider(r, MainLab.s_threshold, m_lab.getRandom());
+		}
 		return null;
 	}
 	
@@ -68,6 +80,14 @@ public class CircuitExperimentFactory extends ExperimentFactory<MainLab,CircuitE
 		if (name.compareTo(GetAllNumbers.GET_ALL_NUMBERS) == 0)
 		{
 			return GetAllNumbers.getProvider(r);
+		}
+		if (name.compareTo(SumTriangleAreas.TRIANGLE_AREAS) == 0)
+		{
+			return SumTriangleAreas.getProvider(r);
+		}
+		if (name.compareTo(BoundingBoxes.BOUNDING_BOXES) == 0)
+		{
+			return BoundingBoxes.getProvider(r);
 		}
 		return null;
 	}

@@ -14,7 +14,7 @@ public class LinesOfCode extends MacroMap
 	 * The hard-coded number of lines, obtained the last time <tt>cloc</tt>
 	 * was run on the source repository.
 	 */
-	protected static int s_lines = 8890;
+	protected static int s_lines = 10000;
 	
 	public LinesOfCode(Laboratory lab) 
 	{
