@@ -1,12 +1,27 @@
-Title of your lab
-=================
+Measuring the impact of lineage tracking
+========================================
 
-| Author:      | Fred Flintstone      |
-| Contact:     | fred@bedrock.com     |
-| Version:     | 1.0                  |
-| Date:        | 2000 B.C.            |
+| Author:      | Sylvain Hallé and Hugo Tremblay |
+| Contact:     | shalle@acm.org                  |
+| Version:     | 1.0                             |
+| Date:        | 2021-04-24                      |
 
-Write here a quick description of your set of experiments.
+[Petit Poucet](https://github.com/liflab/petitpoucet) is Java
+library that allows users to create function circuits over which
+*lineage queries* can then be addressed.
+
+This benchmark measures the impact on performance (processing time and
+memory) of the lineage features. It does so by evaluating various function
+circuits on multiple types of inputs.
+
+The results produced by this lab are discussed in the following publication:
+
+- S. Hallé, H. Tremblay. (2021). Foundations of Fine-Grained Explainability.
+  Proceedings of the 33rd International Conference on Computer-Aided
+  Verification (CAV 2021).
+
+A version of this repository has been submitted as an artifact for the
+conference.
 
 Instructions on using this archive
 ----------------------------------
@@ -46,7 +61,7 @@ You should see something like this:
     Hit Ctrl+C in this window to stop
 
 Open your web browser, and type `http://localhost:21212/index` in the address
-bar. This should lead you to the main page of LabMate's web control panel.
+bar. This should lead you to the main page of LabPal's web control panel.
 (Note that the machine running LabPal does not need to have a web browser.
 You can open a browser in another machine, and replace `localhost` by the IP
 address of the former.)

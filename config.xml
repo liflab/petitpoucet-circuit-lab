@@ -30,7 +30,7 @@
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
-  <author>Sylvain Hallé</author>
+  <author>Sylvain Hallé and Hugo Tremblay</author>
   
   <!-- The project's main class -->
   <mainclass>circuitlab.MainLab</mainclass>
@@ -61,7 +61,18 @@
       <classname>ca.uqac.lif.labpal.Laboratory</classname>
       <bundle>true</bundle>
       <files>
-        <zip>https://github.com/liflab/labpal/releases/download/v2.11.3/labpal-2.11.3.zip</zip>
+        <zip>https://github.com/liflab/labpal/releases/download/v2.11.9/labpal-2.11.9.zip</zip>
+      </files>
+    </dependency>
+    <dependency>
+      <!--
+      Azrael size
+      -->
+      <name>Azrael size</name>
+      <classname>ca.uqac.lif.azrael.size.SizePrinter</classname>
+      <bundle>true</bundle>
+      <files>
+        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.0.1/azrael-size.jar</jar>
       </files>
     </dependency>
   </dependencies>
