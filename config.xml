@@ -61,7 +61,7 @@
       <classname>ca.uqac.lif.labpal.Laboratory</classname>
       <bundle>true</bundle>
       <files>
-        <zip>https://github.com/liflab/labpal/releases/download/v2.11.9/labpal-2.11.9.zip</zip>
+        <zip>https://github.com/liflab/labpal/releases/download/v2.11.9a/labpal-2.11.9a.zip</zip>
       </files>
     </dependency>
     <dependency>
