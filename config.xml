@@ -72,7 +72,7 @@
       <classname>ca.uqac.lif.azrael.size.SizePrinter</classname>
       <bundle>true</bundle>
       <files>
-        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.0.1/azrael-size.jar</jar>
+        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.0.2/azrael-size.jar</jar>
       </files>
     </dependency>
   </dependencies>

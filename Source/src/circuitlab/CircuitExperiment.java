@@ -139,6 +139,9 @@ public class CircuitExperiment extends Experiment
 		SizePrinter size_q = new SizePrinter();
 		SizePrinter size_f = new SizePrinter();
 		SizePrinter size_t = new SizePrinter();
+		size_q.ignoreAccessChecks(true); // For Java 9+
+		size_f.ignoreAccessChecks(true);
+		size_t.ignoreAccessChecks(true);
 		ConcreteTracer tracer = new ConcreteTracer();
 		long graph_start_time = System.currentTimeMillis();
 		ConcreteTraceabilityTree tree = tracer.trace(CausalityQuery.instance, NthOutput.get(0), q);
