@@ -53,6 +53,9 @@ import circuitlab.plots.CustomScatterplot;
 
 public class MainLab extends Laboratory
 {
+	/**
+	 * The fraction of input elements that are involved in the designation tree.
+	 */
 	protected static float s_threshold = 0.01f;
 
 	@Override
@@ -60,6 +63,7 @@ public class MainLab extends Laboratory
 	{
 		// Metadata
 		setAuthor("Sylvain Hallé, Hugo Tremblay");
+		setDoi("10.5281/zenodo.4717794");
 
 		// The factory to create the experiments
 		CircuitExperimentFactory factory = new CircuitExperimentFactory(this);

@@ -13,11 +13,27 @@ circuits on multiple types of inputs.</p>
 <p>The problems correspond to simple-to-medium computing tasks.</p>
 
 <ul>
-<li><a href="/tasks/WindowAverage.html">Window average</a></li>
-<li><a href="/tasks/WindowAverage.html">Sum of triangle areas</a></li>
-<li><a href="/tasks/WindowAverage.html">Nested bounding boxes</a></li>
-<li><a href="/tasks/WindowAverage.html">Get all numbers</a></li>
+<li><em>Window average</em>: given a CSV file, this task extracts the numerical value
+in each line, compute the average of each set of n successive values and check
+that it is below some threshold <i>t</i></li>
+
+<li><em>Sum of triangle areas</em>: given a list of arbitrary vectors, this task checks that each vector
+contains the lengths of the three sides of a valid triangle; if so, it computes their
+area using Heron’s formula 6 and sums the area of all valid triangles.</li>
+
+<li><em>Nested bounding boxes</em>: given a DOM tree, this task checks that each element
+has a bounding box (width and height) larger than all of its children.</li>
+
+<li><em>Get all numbers</em>: represents a simple operation that takes an input comma-
+separated list of elements, and produces a vector containing only the elements of
+the file that are numerical values. The explanation we ask is to point at a given
+element of the output vector, and retrace the location in the input string that
+corresponds to this number.</li>
 </ul>
+
+<p>Each of these problems comes in configurable "sizes"; for example, Window average
+varies the number of elements in the input file, while Nested bounding boxes varies
+the number of nodes in the DOM tree.</p>
 
 <h3>References</h3>
 
@@ -48,4 +64,4 @@ Verification (CAV 2021).</li>
 java -jar petitpoucet-circuit-lab.jar --autostart
 </pre>
  
-<p>See the <a href=/help">Help</a> page for more information.</p>
+<p>See the <a href="/help">Help</a> page for more information.</p>
