@@ -75,5 +75,18 @@
         <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.0.2/azrael-size.jar</jar>
       </files>
     </dependency>
+    <dependency>
+      <!--
+      Petit Poucet
+      -->
+      <name>Petit Poucet</name>
+      <classname>ca.uqac.lif.petitpoucet.functions.CircuitFunction</classname>
+      <bundle>true</bundle>
+      <files>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.0/petitpoucet-core.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.0/petitpoucet-functions.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.0/petitpoucet-common.jar</jar>
+      </files>
+    </dependency>
   </dependencies>
 </build>
