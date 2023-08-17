@@ -6,16 +6,32 @@ library that allows users to create function circuits over which
 
 <p>This benchmark measures the impact on performance (processing time and
 memory) of the lineage features. It does so by evaluating various function
-circuits on multiple types of inputs.</p>
+circuits on multiple types of inputs, and comparing time and memory with
+lineage being toggled on or off. Note that for historical reasons, this
+benchmark uses the branch 1.x of Petit Poucet; since the benchmark was created,
+a new version 2.x has been implemented; it provides similar features but with
+a completely different API.</p>
 
 <h3>Set of problems</h3>
 
-<p>The problems correspond to simple-to-medium computing tasks.</p>
+<p>The problems correspond to simple-to-medium load computing tasks.</p>
 
 <ul>
 <li><em>Window average</em>: given a CSV file, this task extracts the numerical value
 in each line, compute the average of each set of n successive values and check
 that it is below some threshold <i>t</i></li>
+
+<li><em>Iterator</em>: evaluates a temporal logic expression over a sequence o
+method calls. The property stipulates that on a Java \texttt{Iterator}, every
+call to method <tt>next</tt> must be followed by a call to <tt>hasNext</tt>. A
+function circuit returning the <em>false</em> verdict can be explained by
+retracing the locations in the sequence where two successive <tt>next</tt>
+events can be found.</li>
+
+<li><em>Count regex matches</em>: calculates the number of matches of a given
+regular expression withing a character string. The explanation for the output
+number retraces the character ranges of each sub-string matching the pattern in
+question.</li>
 
 <li><em>Sum of triangle areas</em>: given a list of arbitrary vectors, this task checks that each vector
 contains the lengths of the three sides of a valid triangle; if so, it computes their
@@ -37,12 +53,15 @@ the number of nodes in the DOM tree.</p>
 
 <h3>References</h3>
 
-<p>The results in this benchmark are mentioned in the following publication:</p>
+<p>This is version 2 of the benchmark, which extends version 1 with additional
+tasks and measurements. The results of version 1 were mentioned in the following
+publication:</p>
 
 <ul>
 <li>S. Hallé, H. Tremblay. (2021). <i>Foundations of Fine-Grained Explainability</i>.
 Proceedings of the 33rd International Conference on Computer-Aided
-Verification (CAV 2021).</li>
+Verification (CAV 2021) -- Part II. Springer: Lecture Notes in Computer Science
+12760, 500-523.</li>
 </ul>
 
 <h3>Prerequisites</h3>
@@ -61,7 +80,7 @@ Verification (CAV 2021).</li>
 <p>This lab can be run by typing, at the command line:</p>
 
 <pre>
-java -jar petitpoucet-circuit-lab.jar --autostart
+java -jar petitpoucet-circuit-lab-v2.jar --autostart
 </pre>
  
 <p>See the <a href="/help">Help</a> page for more information.</p>

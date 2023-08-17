@@ -1,6 +1,6 @@
 /*
     A benchmark for Petit Poucet
-    Copyright (C) 2019 Laboratoire d'informatique formelle
+    Copyright (C) 2019-2023 Laboratoire d'informatique formelle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published
@@ -19,11 +19,14 @@ package circuitlab;
 
 import ca.uqac.lif.labpal.ExperimentFactory;
 import ca.uqac.lif.labpal.Region;
-import circuitlab.MainLab;
 import circuitlab.circuits.AverageWindow;
 import circuitlab.circuits.BoundingBoxes;
+import circuitlab.circuits.CountMatches;
 import circuitlab.circuits.GetAllNumbers;
+import circuitlab.circuits.HasNext;
 import circuitlab.circuits.SumTriangleAreas;
+import circuitlab.inputs.MethodCallProvider;
+import circuitlab.inputs.StringProvider;
 import circuitlab.inputs.TextLineProvider;
 import circuitlab.inputs.TriangleListProvider;
 import circuitlab.inputs.WebPageProvider;
@@ -67,6 +70,14 @@ public class CircuitExperimentFactory extends ExperimentFactory<MainLab,CircuitE
 		{
 			return WebPageProvider.getProvider(r, MainLab.s_threshold, m_lab.getRandom());
 		}
+		if (name.compareTo(StringProvider.CHARACTER_STRING) == 0)
+		{
+			return StringProvider.getProvider(r, MainLab.s_threshold, m_lab.getRandom());
+		}
+		if (name.compareTo(MethodCallProvider.METHOD_CALLS) == 0)
+		{
+			return MethodCallProvider.getProvider(r, MainLab.s_threshold, m_lab.getRandom());
+		}
 		return null;
 	}
 	
@@ -88,6 +99,14 @@ public class CircuitExperimentFactory extends ExperimentFactory<MainLab,CircuitE
 		if (name.compareTo(BoundingBoxes.BOUNDING_BOXES) == 0)
 		{
 			return BoundingBoxes.getProvider(r);
+		}
+		if (name.compareTo(CountMatches.COUNT_REGEX_MATCHES) == 0)
+		{
+			return CountMatches.getProvider(r);
+		}
+		if (name.compareTo(HasNext.HAS_NEXT) == 0)
+		{
+			return HasNext.getProvider(r);
 		}
 		return null;
 	}

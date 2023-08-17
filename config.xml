@@ -26,7 +26,7 @@
   <name>Petit Poucet Circuit Laboratory</name>
   
   <!-- The project's version number -->
-  <version>1.0</version>
+  <version>2.0</version>
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
@@ -37,7 +37,7 @@
   
   <!-- Output jar -->
   <jar>
-    <filename>petitpoucet-circuit-lab.jar</filename>
+    <filename>petitpoucet-circuit-lab-v2.jar</filename>
     <withdeps>true</withdeps>
     <withdoc>false</withdoc>
   </jar>
@@ -61,14 +61,14 @@
       <classname>ca.uqac.lif.labpal.Laboratory</classname>
       <bundle>true</bundle>
       <files>
-        <zip>https://github.com/liflab/labpal/releases/download/v2.11.9a/labpal-2.11.9a.zip</zip>
+        <zip>https://github.com/liflab/labpal/releases/download/v2.11.10/labpal-2.11.10.zip</zip>
       </files>
     </dependency>
     <dependency>
       <!--
       Azrael size
       -->
-      <name>Azrael size</name>
+      <name>Azrael size</name>            
       <classname>ca.uqac.lif.azrael.size.SizePrinter</classname>
       <bundle>true</bundle>
       <files>
@@ -83,9 +83,9 @@
       <classname>ca.uqac.lif.petitpoucet.functions.CircuitFunction</classname>
       <bundle>true</bundle>
       <files>
-        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.0/petitpoucet-core.jar</jar>
-        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.0/petitpoucet-functions.jar</jar>
-        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.0/petitpoucet-common.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.1/petitpoucet-core.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.1/petitpoucet-functions.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v1.1/petitpoucet-common.jar</jar>
       </files>
     </dependency>
   </dependencies>

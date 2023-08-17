@@ -36,8 +36,12 @@ import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.mtnp.table.TransformedTable;
 import circuitlab.circuits.AverageWindow;
 import circuitlab.circuits.BoundingBoxes;
+import circuitlab.circuits.CountMatches;
 import circuitlab.circuits.GetAllNumbers;
+import circuitlab.circuits.HasNext;
 import circuitlab.circuits.SumTriangleAreas;
+import circuitlab.inputs.MethodCallProvider;
+import circuitlab.inputs.StringProvider;
 import circuitlab.inputs.TextLineProvider;
 import circuitlab.inputs.TriangleListProvider;
 import circuitlab.inputs.WebPageProvider;
@@ -63,7 +67,7 @@ public class MainLab extends Laboratory
 	{
 		// Metadata
 		setAuthor("Sylvain Hallé, Hugo Tremblay");
-		setDoi("10.5281/zenodo.4717794");
+		//setDoi("10.5281/zenodo.4717794");
 
 		// The factory to create the experiments
 		CircuitExperimentFactory factory = new CircuitExperimentFactory(this);
@@ -76,8 +80,8 @@ public class MainLab extends Laboratory
 
 		// Setup of global region
 		CompatibleRegion big_r = new CompatibleRegion();
-		big_r.add(FUNCTION, GetAllNumbers.GET_ALL_NUMBERS, AverageWindow.AVERAGE_WINDOW, SumTriangleAreas.TRIANGLE_AREAS, BoundingBoxes.BOUNDING_BOXES);
-		big_r.add(INPUT_NAME, TextLineProvider.CSV_FILE, TriangleListProvider.TRIANGLE_LIST, WebPageProvider.WEB_PAGE);
+		big_r.add(FUNCTION, GetAllNumbers.GET_ALL_NUMBERS, AverageWindow.AVERAGE_WINDOW, SumTriangleAreas.TRIANGLE_AREAS, BoundingBoxes.BOUNDING_BOXES, CountMatches.COUNT_REGEX_MATCHES, HasNext.HAS_NEXT);
+		big_r.add(INPUT_NAME, TextLineProvider.CSV_FILE, TriangleListProvider.TRIANGLE_LIST, WebPageProvider.WEB_PAGE, StringProvider.CHARACTER_STRING, MethodCallProvider.METHOD_CALLS);
 		big_r.add(TextLineProvider.LINES, 10, 100, 1000, 2000, 5000, 10000, 15000);
 		big_r.add(TRACKING_ENABLED, CircuitExperiment.TRACKING_NO, CircuitExperiment.TRACKING_YES);
 
@@ -110,7 +114,7 @@ public class MainLab extends Laboratory
 			add(tt_time);
 			Scatterplot plot_time = new Scatterplot(tt_time);
 			plot_time.setTitle(tt_time.getTitle());
-			plot_time.setCaption(Axis.X, "Length").setCaption(Axis.Y, "Time (ms)");
+			plot_time.setCaption(Axis.X, "Length").setCaption(Axis.Y, "Time (ms)").setLogscale(Axis.Y);
 			l_namer.setNickname(plot_time, sub_r, "pFileLenTime", "");
 			add(plot_time);
 		}
@@ -219,6 +223,20 @@ public class MainLab extends Laboratory
 			String fct = point.getString(FUNCTION);
 			String pro = point.getString(INPUT_NAME);
 			//System.out.println(fct + "," + pro);
+			if (pro.compareTo(StringProvider.CHARACTER_STRING) == 0)
+			{
+				if (fct.compareTo(CountMatches.COUNT_REGEX_MATCHES) == 0)
+				{
+					return true;
+				}
+			}
+			if (pro.compareTo(MethodCallProvider.METHOD_CALLS) == 0)
+			{
+				if (fct.compareTo(HasNext.HAS_NEXT) == 0)
+				{
+					return true;
+				}
+			}
 			if (pro.compareTo(TriangleListProvider.TRIANGLE_LIST) == 0)
 			{
 				if (fct.compareTo(SumTriangleAreas.TRIANGLE_AREAS) == 0)
